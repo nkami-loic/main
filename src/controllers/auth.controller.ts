@@ -13,15 +13,6 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password, role } =
       req.body;
 
-    // Validation basique
-    if (name || !email || !password) {
-      res.status(400).json({
-        success: false,
-        message: "Tous les champs sont requis",
-      });
-      return;
-    }
-
     // Vérifier si l'email existe déjà
     const [existingUsers] = await pool.query(
       "SELECT id FROM users WHERE email = ?",
@@ -43,7 +34,7 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     const created_at = new Date();
     // Insérer l'utilisateur
     const [result] = await pool.query(
-      "INSERT INTO users (name, email, phone , password, role, created_at) VALUES ( ?, ?, ?, ? ,?)",
+      "INSERT INTO users (name, email, password, role, created_at) VALUES ( ?, ?, ?, ? ,?)",
       [name, email, hashedPassword, role, created_at]
     );
 
