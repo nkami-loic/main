@@ -9,21 +9,13 @@ dotenv.config();
 
 const app: Application = express();
 
-// Middlewares de sécurité
 app.use(helmet());
 app.use(cors());
 
-// Middlewares de parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Logger
 app.use(morgan("dev"));
-
-// Routes principales
 app.use("/api", routes);
-
-// Route racine
 app.get("/", (req: Request, res: Response) => {
   res.json({
     message: "Bienvenue sur l'API Tourneo",
@@ -36,7 +28,6 @@ app.get("/", (req: Request, res: Response) => {
   });
 });
 
-// Gestion des routes non trouvées
 app.use((req: Request, res: Response) => {
   res.status(404).json({
     error: "Route non trouvée",
@@ -44,7 +35,6 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Gestion des erreurs
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err.stack);
   res.status(500).json({
