@@ -42,7 +42,13 @@ export interface JwtPayload {
 export interface AuthRequest extends Request {
   user?: JwtPayload;
 }
-
+export interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    email: string;
+    role: "player" | "organizer" | "admin";
+  };
+}
 export interface AuthResponse {
   token: string;
   user: {

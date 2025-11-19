@@ -7,13 +7,13 @@ import { RowDataPacket } from "mysql2";
  * Vérifie que l'utilisateur est l'organisateur du tournoi
  */
 export const isTournamentOrganizer = async (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const tournamentId = parseInt(req.params.id);
-    const userId = req.user.id;
+    const tournamentId = parseInt((req as any).user?.id);
+    const userId = (req as any).user?.id;
 
     if (isNaN(tournamentId)) {
       res.status(400).json({
@@ -23,7 +23,6 @@ export const isTournamentOrganizer = async (
       return;
     }
 
-    // Vérifier que le tournoi existe et appartient à l'utilisateur
     const [tournaments] = await pool.query<RowDataPacket[]>(
       "SELECT id, organizer_id FROM tournaments WHERE id = ?",
       [tournamentId]
@@ -61,11 +60,13 @@ export const isTournamentOrganizer = async (
  * Vérifie que l'utilisateur est organisateur (rôle)
  */
 export const isOrganizer = (
-  req: AuthenticatedRequest,
+  req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  if (req.user.role !== "organizer" && req.user.role !== "admin") {
+  const userRole = (req as any).user?.role;
+
+  if (userRole !== "organizer" && userRole !== "admin") {
     res.status(403).json({
       error: "Accès refusé",
       message: "Vous devez être organisateur pour effectuer cette action",

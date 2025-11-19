@@ -8,7 +8,6 @@ export const authenticateToken = (
   next: NextFunction
 ): void => {
   try {
-    // je récupére le token du header Authorization
     const authHeader = req.headers["authorization"];
     const token = authHeader && authHeader.split(" ")[1];
 
@@ -21,9 +20,11 @@ export const authenticateToken = (
     }
 
     const decoded = verifyToken(token);
-
-    // Ajouter les infos utilisateur à la requête
-    req.user = decoded;
+    (req as any).user = {
+      id: decoded.userId,
+      email: decoded.email,
+      role: decoded.role,
+    };
 
     next();
   } catch (error) {
