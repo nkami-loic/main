@@ -2,16 +2,10 @@ import bcrypt from "bcryptjs";
 
 const SALT_ROUNDS = 10;
 
-/**
- * Hash un mot de passe
- */
 export const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, SALT_ROUNDS);
 };
 
-/**
- * Compare un mot de passe avec son hash
- */
 export const comparePassword = async (
   password: string,
   hash: string
@@ -19,9 +13,6 @@ export const comparePassword = async (
   return await bcrypt.compare(password, hash);
 };
 
-/**
- * Valide la force d'un mot de passe
- */
 export const validatePassword = (
   password: string
 ): {

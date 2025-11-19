@@ -7,13 +7,13 @@ import { RowDataPacket } from "mysql2";
  * Vérifie que l'utilisateur est l'organisateur du tournoi
  */
 export const isTournamentOrganizer = async (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
-    const tournamentId = parseInt((req as any).user?.id);
-    const userId = (req as any).user?.id;
+    const tournamentId = parseInt(req.params.id);
+    const userId = req.user.id;
 
     if (isNaN(tournamentId)) {
       res.status(400).json({
@@ -60,11 +60,11 @@ export const isTournamentOrganizer = async (
  * Vérifie que l'utilisateur est organisateur (rôle)
  */
 export const isOrganizer = (
-  req: Request,
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
 ): void => {
-  const userRole = (req as any).user?.role;
+  const userRole = req.user.role;
 
   if (userRole !== "organizer" && userRole !== "admin") {
     res.status(403).json({
