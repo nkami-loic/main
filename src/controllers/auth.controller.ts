@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+// @ts-ignore
 import bcrypt from "bcrypt";
 import { pool } from "../../config/db.js";
 import { generateToken } from "../utils/jwt.util.js";
@@ -9,11 +10,11 @@ import { UserRole } from "../types/auth.types.js";
  */
 export const register = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { first_name, last_name, email, password_hash, role, name, phone } =
+    const { name, email, password, role } =
       req.body;
 
     // Validation basique
-    if (!first_name || !last_name || !email || !password_hash || !phone) {
+    if (name || !email || !password) {
       res.status(400).json({
         success: false,
         message: "Tous les champs sont requis",
@@ -36,14 +37,14 @@ export const register = async (req: Request, res: Response): Promise<void> => {
     }
 
     // Hasher le mot de passe
-    const hashedPassword = await bcrypt.hash(password_hash, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Créer la date de création
     const created_at = new Date();
     // Insérer l'utilisateur
     const [result] = await pool.query(
-      "INSERT INTO users (first_name, last_name, email, phone , password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ? ,?)",
-      [first_name, last_name, email, phone, hashedPassword, role, created_at]
+      "INSERT INTO users (name, email, phone , password, role, created_at) VALUES ( ?, ?, ?, ? ,?)",
+      [name, email, hashedPassword, role, created_at]
     );
 
     const userId = (result as any).insertId;
@@ -95,7 +96,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Récupérer l'utilisateur
     const [users] = await pool.query(
-      "SELECT id, first_name, last_name, email, password_hash, role FROM users WHERE email = ?",
+      "SELECT id, name,  email, password, role FROM users WHERE email = ?",
       [email]
     );
 
@@ -134,8 +135,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
         token,
         user: {
           id: user.id,
-          first_name: user.first_name,
-          last_name: user.last_name,
+          name: user.name,
           email: user.email,
           role: user.role,
         },
@@ -163,7 +163,7 @@ export const getProfile = async (
     console.log("🔍 userId extrait:", userId);
 
     const [users] = await pool.query(
-      "SELECT id, first_name, last_name, email, role, created_at FROM users WHERE id = ?",
+      "SELECT id, name, email, role, created_at FROM users WHERE id = ?",
       [userId]
     );
 
