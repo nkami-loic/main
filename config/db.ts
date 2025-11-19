@@ -1,3 +1,4 @@
+// @ts-ignore
 import mysql, { Pool } from "mysql2";
 
 const pool: Pool = mysql.createPool({
@@ -16,12 +17,12 @@ const promisePool = pool.promise();
 const testConnection = async (): Promise<boolean> => {
   try {
     const [rows] = await promisePool.query("SELECT 1 + 1 AS result");
-    console.log("✅ Connexion à la base de données réussie");
-    console.log(`📊 Base de données: ${process.env.DB_NAME}`);
+    console.log(" Connexion à la base de données réussie");
+    console.log(`Base de données: ${process.env.DB_NAME}`);
     return true;
   } catch (error) {
     const err = error as Error;
-    console.error("❌ Erreur de connexion à la base de données:", err.message);
+    console.error("Erreur de connexion à la base de données:", err.message);
     return false;
   }
 };
