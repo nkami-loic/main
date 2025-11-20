@@ -1,9 +1,7 @@
 import { Response, NextFunction } from "express";
 import { AuthRequest } from "../types/auth.types.js";
 
-/**
- * Middleware pour vérifier si l'utilisateur est un organisateur
- */
+// Middleware pour vérifier si l'utilisateur est un organisateur
 export const isOrganizer = (
   req: AuthRequest,
   res: Response,
@@ -28,9 +26,7 @@ export const isOrganizer = (
   next();
 };
 
-/**
- * Middleware pour vérifier si l'utilisateur est un admin
- */
+// Middleware pour vérifier si l'utilisateur est un administrateur
 export const isAdmin = (
   req: AuthRequest,
   res: Response,

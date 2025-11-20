@@ -169,13 +169,13 @@ export const getPoolById = async (
 
 // ajouter un joueur à une poule
 export const addPlayerToPool = async (
-  req: AuthRequest,
+  req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const poolId = parseInt(req.params.id);
     const { user_id } = req.body;
-    const organizerId = req.user?.userId;
+    const organizerId = (req as any).user?.id;
 
     if (isNaN(poolId)) {
       res.status(400).json({
@@ -209,10 +209,11 @@ export const addPlayerToPool = async (
       });
       return;
     }
-
+    console.log("🔍 pools[0].tournament_id:", pools[0].tournament_id);
+    console.log("🔍 user_id:", user_id);
     // Vérifier que le joueur est inscrit au tournoi
     const [registrations] = await pool.query<RowDataPacket[]>(
-      "SELECT id FROM registrations WHERE tournament_id = ? AND user_id = ? AND status = 'accepted'",
+      "SELECT id FROM registrations WHERE tournament_id = ? AND user_id = ? AND status = 'active'",
       [pools[0].tournament_id, user_id]
     );
 
