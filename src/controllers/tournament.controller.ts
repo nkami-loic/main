@@ -19,17 +19,19 @@ export const createTournament = async (
       description,
       start_date,
       end_date,
-      min_players = 4,
-      max_players = 16,
-      default_win_score_set1 = 6,
-      default_win_score_set2 = 6,
+      etat,
+      organizer_id,
+      min_players = 0,
+      max_players = 0,
+      default_win_score_set1 = 0,
+      default_win_score_set2 = 0,
       default_loss_score_set1 = 0,
       default_loss_score_set2 = 0,
-      forfeit_deadline_hours = 24,
+      forfeit_deadline_hours = 0,
     } = req.body as CreateTournamentRequest;
     const userId = (req as any).user?.id;
     // Validation
-    if (!name || !start_date || !end_date) {
+    /*if (!name || !start_date || !end_date) {
       res.status(400).json({
         error: "Données manquantes",
         message: "Le nom, la date de début et la date de fin sont obligatoires",
@@ -53,16 +55,16 @@ export const createTournament = async (
         message: "Le nombre minimum de joueurs ne peut pas dépasser le maximum",
       });
       return;
-    }
+    }*/
 
     const [result] = await pool.query<ResultSetHeader>(
       `INSERT INTO tournaments (
                 name, description, start_date, end_date,
-                min_players, max_players, status, organizer_id,
+                min_players, max_players, etat, organizer_id,
                 default_win_score_set1, default_win_score_set2,
                 default_loss_score_set1, default_loss_score_set2,
                 forfeit_deadline_hours
-            ) VALUES (?, ?, ?, ?, ?, ?, 'registration', ?, ?, ?, ?, ?, ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         description,
@@ -70,7 +72,8 @@ export const createTournament = async (
         end_date,
         min_players,
         max_players,
-        userId,
+        etat,
+        organizer_id,
         default_win_score_set1,
         default_win_score_set2,
         default_loss_score_set1,
@@ -88,7 +91,7 @@ export const createTournament = async (
         description,
         start_date,
         end_date,
-        status: "registration",
+        etat: "registration",
       },
     });
   } catch (error) {
@@ -111,8 +114,7 @@ export const getAllTournaments = async (
     let query = `
             SELECT 
                 t.*,
-                u.first_name as organizer_first_name,
-                u.last_name as organizer_last_name,
+                u.name as organizer_name,
                 COUNT(DISTINCT r.id) as registered_players
             FROM tournaments t
             LEFT JOIN users u ON t.organizer_id = u.id
@@ -170,8 +172,7 @@ export const getTournamentById = async (
     const [tournaments] = await pool.query<RowDataPacket[]>(
       `SELECT 
                 t.*,
-                u.first_name as organizer_first_name,
-                u.last_name as organizer_last_name,
+                u.name as organizer_first_name,
                 u.email as organizer_email
             FROM tournaments t
             LEFT JOIN users u ON t.organizer_id = u.id
@@ -193,11 +194,10 @@ export const getTournamentById = async (
     const [players] = await pool.query<RowDataPacket[]>(
       `SELECT 
                 u.id,
-                u.first_name,
-                u.last_name,
+                u.name,
                 u.email,
                 r.registration_date,
-                r.status
+                r.etat
             FROM registrations r
             JOIN users u ON r.user_id = u.id
             WHERE r.tournament_id = ? AND r.status = 'active'
@@ -372,7 +372,7 @@ export const registerToTournament = async (
 
     // Vérifier que le tournoi existe et est en phase d'inscription
     const [tournaments] = await pool.query<RowDataPacket[]>(
-      "SELECT id, status, max_players FROM tournaments WHERE id = ?",
+      "SELECT id, etat, max_players FROM tournaments WHERE id = ?",
       [tournamentId]
     );
 
