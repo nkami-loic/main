@@ -33,6 +33,8 @@ export interface CreateTournamentRequest {
   description?: string;
   start_date: string;
   end_date: string;
+  etat: string,
+  organizer_id: string;
   min_players?: number;
   max_players?: number;
   default_win_score_set1?: number;
