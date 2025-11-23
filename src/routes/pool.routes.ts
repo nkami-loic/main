@@ -18,6 +18,7 @@ router.get(
   getPoolsByTournament
 );
 router.get("/:id", authenticateToken, getPoolById);
+
 router.post("/:id/players", authenticateToken, isOrganizer, addPlayerToPool);
 router.delete(
   "/:id/players/:userId",

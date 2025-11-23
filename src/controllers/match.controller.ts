@@ -3,9 +3,7 @@ import { pool } from "../../config/db.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2";
 import { AuthRequest } from "#types/auth.types";
 
-/**
- * Créer un match dans une poule
- */
+//Créer un match dans une poule
 export const createMatch = async (
   req: Request,
   res: Response
@@ -114,9 +112,7 @@ export const createMatch = async (
   }
 };
 
-/**
- * Récupérer tous les matches d'une poule
- */
+//Récupérer tous les matches d'une poule
 export const getMatchesByPool = async (
   req: Request,
   res: Response
@@ -127,12 +123,9 @@ export const getMatchesByPool = async (
     const [matches] = await pool.query<RowDataPacket[]>(
       `SELECT 
         m.*,
-        p1.first_name as player1_first_name,
-        p1.last_name as player1_last_name,
-        p2.first_name as player2_first_name,
-        p2.last_name as player2_last_name,
-        w.first_name as winner_first_name,
-        w.last_name as winner_last_name,
+        p1.name as player1_name,
+        p2.name as player2_name,
+        w.name as winner_name,
         po.name as pool_name
        FROM matches m
        LEFT JOIN users p1 ON m.player1_id = p1.id
@@ -154,9 +147,7 @@ export const getMatchesByPool = async (
   }
 };
 
-/**
- * Récupérer tous les matches d'un tournoi
- */
+//Récupérer tous les matches d'un tournoi
 export const getMatchesByTournament = async (
   req: Request,
   res: Response
@@ -194,9 +185,7 @@ export const getMatchesByTournament = async (
   }
 };
 
-/**
- * Récupérer un match avec ses résultats détaillés
- */
+//Récupérer un match avec ses résultats détaillés
 export const getMatchById = async (
   req: Request,
   res: Response
@@ -208,14 +197,11 @@ export const getMatchById = async (
     const [matches] = await pool.query<RowDataPacket[]>(
       `SELECT 
         m.*,
-        p1.first_name as player1_first_name,
-        p1.last_name as player1_last_name,
+        p1.name as player1_name,
         p1.email as player1_email,
-        p2.first_name as player2_first_name,
-        p2.last_name as player2_last_name,
+        p2.name as player2_name,
         p2.email as player2_email,
-        w.first_name as winner_first_name,
-        w.last_name as winner_last_name,
+        w.name as winner_name,
         po.name as pool_name
        FROM matches m
        LEFT JOIN users p1 ON m.player1_id = p1.id
@@ -255,9 +241,7 @@ export const getMatchById = async (
   }
 };
 
-/**
- * Mettre à jour un match
- */
+//Mettre à jour un match
 export const updateMatch = async (
   req: AuthRequest,
   res: Response
@@ -354,9 +338,7 @@ export const updateMatch = async (
   }
 };
 
-/**
- * Ajouter ou mettre à jour le résultat d'un set
- */
+//Ajouter ou mettre à jour le résultat d'un set
 export const updateMatchResult = async (
   req: AuthRequest,
   res: Response
@@ -385,22 +367,6 @@ export const updateMatchResult = async (
       });
       return;
     }
-
-    // Vérifier que l'utilisateur est l'organisateur
-    const [tournaments] = await pool.query<RowDataPacket[]>(
-      "SELECT organizer_id FROM tournaments WHERE id = ?",
-      [matches[0].tournament_id]
-    );
-
-    if (tournaments[0].organizer_id !== organizerId) {
-      res.status(403).json({
-        error: "Accès refusé",
-        message: "Vous n'êtes pas l'organisateur de ce tournoi",
-      });
-      return;
-    }
-
-    // Validation
     if (![1, 2, 3].includes(set_number)) {
       res.status(400).json({
         error: "Set invalide",
@@ -408,8 +374,6 @@ export const updateMatchResult = async (
       });
       return;
     }
-
-    // Insérer ou mettre à jour le résultat du set
     await pool.query(
       `INSERT INTO match_results (match_id, set_number, player1_score, player2_score, is_tiebreak, is_super_tiebreak)
        VALUES (?, ?, ?, ?, ?, ?)
@@ -428,7 +392,6 @@ export const updateMatchResult = async (
       ]
     );
 
-    // Mettre à jour le statut du match si nécessaire
     if (matches[0].status === "pending") {
       await pool.query(
         "UPDATE matches SET status = 'in_progress' WHERE id = ?",
@@ -448,9 +411,7 @@ export const updateMatchResult = async (
   }
 };
 
-/**
- * Supprimer un match
- */
+//Supprimer un match
 export const deleteMatch = async (
   req: AuthRequest,
   res: Response

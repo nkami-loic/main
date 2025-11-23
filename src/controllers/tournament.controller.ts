@@ -111,8 +111,7 @@ export const getAllTournaments = async (
     let query = `
             SELECT 
                 t.*,
-                u.first_name as organizer_first_name,
-                u.last_name as organizer_last_name,
+                u.name as organizer_first_name,
                 COUNT(DISTINCT r.id) as registered_players
             FROM tournaments t
             LEFT JOIN users u ON t.organizer_id = u.id

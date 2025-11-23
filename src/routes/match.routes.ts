@@ -21,7 +21,7 @@ router.get(
 );
 router.get("/:id", authenticateToken, getMatchById);
 router.put("/:id", authenticateToken, isOrganizer, updateMatch);
-router.put("/:id/result", authenticateToken, isOrganizer, updateMatchResult);
+router.put("/:id/result", authenticateToken, updateMatchResult);
 router.delete("/:id", authenticateToken, isOrganizer, deleteMatch);
 
 export default router;

@@ -138,9 +138,7 @@ export const getPoolById = async (
       `SELECT 
         pp.*,
         u.email,
-        u.first_name,
-        u.last_name,
-        u.phone,
+        u.name,
         (pp.sets_won - pp.sets_lost) as set_differential,
         (pp.games_won - pp.games_lost) as game_differential
        FROM pool_players pp
@@ -169,14 +167,13 @@ export const getPoolById = async (
 
 // ajouter un joueur à une poule
 export const addPlayerToPool = async (
-  req: AuthRequest,
+  req: Request,
   res: Response
 ): Promise<void> => {
   try {
     const poolId = parseInt(req.params.id);
     const { user_id } = req.body;
-    const organizerId = req.user?.userId;
-
+    const organizerId = (req as any).user?.id;
     if (isNaN(poolId)) {
       res.status(400).json({
         error: "ID invalide",
