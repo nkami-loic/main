@@ -10,7 +10,7 @@ export interface Tournament {
   min_players: number;
   max_players: number;
   status: TournamentStatus;
-  organizer_id: number;
+  organizer_name: string;
   default_win_score_set1: number;
   default_win_score_set2: number;
   default_loss_score_set1: number;
@@ -34,7 +34,8 @@ export interface CreateTournamentRequest {
   start_date: string;
   end_date: string;
   etat: string,
-  organizer_id: string;
+  organizer_name: string;
+  organizer_id: number;
   min_players?: number;
   max_players?: number;
   default_win_score_set1?: number;
@@ -61,15 +62,13 @@ export interface UpdateTournamentRequest {
 export interface TournamentWithDetails extends Tournament {
   organizer?: {
     id: number;
-    first_name: string;
-    last_name: string;
+    name: string;
     email: string;
   };
   registrations_count?: number;
   registered_players?: {
     id: number;
-    first_name: string;
-    last_name: string;
+    name: string;
     email: string;
     registration_date: Date;
     status: RegistrationStatus;
