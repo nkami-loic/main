@@ -17,9 +17,9 @@ import {
 const router = Router();
 
 router.get("/", getAllTournaments);
-router.get("/:id", authenticateToken, getTournamentById);
+router.get("/:id", getTournamentById);
 router.post("/", createTournament);
-router.put("/:id", authenticateToken, isTournamentOrganizer, updateTournament);
+router.put("/:id", updateTournament);
 router.delete(
   "/:id",
   deleteTournament

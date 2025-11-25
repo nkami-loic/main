@@ -36,13 +36,14 @@ export class UserModel {
     userData: RegisterDto & { password: string }
   ): Promise<number> {
     const [result] = await pool.query<ResultSetHeader>(
-      `INSERT INTO users (email, password, name, role)
-             VALUES (?, ?, ?, ?)`,
+      `INSERT INTO users (email,tel, password, name, role)
+             VALUES (?,?, ?, ?, ?)`,
       [
         userData.email,
+        userData.tel,
         userData.password,
         userData.name,
-        userData.role || "player",
+        userData.role || "Player",
       ]
     );
 

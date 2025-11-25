@@ -20,8 +20,9 @@ export interface User {
 export interface RegisterDto {
   email: string;
   password: string;
+  tel: string;
   name: string;
-  role?: "player" | "organizer";
+  role?: "Player" | "Organizer";
 }
 
 export interface LoginDto {

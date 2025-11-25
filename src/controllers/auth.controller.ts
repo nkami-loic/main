@@ -87,7 +87,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     // Récupérer l'utilisateur
     const [users] = await pool.query(
-      "SELECT id, name,  email, password, role FROM users WHERE email = ?",
+      "SELECT id, name, tel,  email, password, role FROM users WHERE email = ?",
       [email]
     );
 
@@ -128,6 +128,7 @@ export const login = async (req: Request, res: Response): Promise<void> => {
           id: user.id,
           name: user.name,
           email: user.email,
+          tel: user.tel,
           role: user.role,
         },
       },
